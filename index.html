@@ -7,29 +7,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --alien-green: #20C20E; --dark-bg: #050505; --cyan: #00FFFF; --danger-red: #FF0000; --magenta: #FF00FF; --amber: #FFAA00; --gold: #FFDD00; }
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-}
-        input, textarea, select {
-            user-select: text;
-            -webkit-user-select: text;
-            -webkit-touch-callout: default;
-        }
-        html, body, #container, canvas {
+- { margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; user-select: none; -webkit-user-select: none; }
+        body {
             background: var(--dark-bg);
             color: var(--alien-green);
             font-family: 'Courier New', monospace;
             overscroll-behavior: none;
-            touch-action: none;
-            -webkit-touch-callout: none;
-            user-select: none;
-            -webkit-user-select: none;
             height: 100%;
             width: 100%;
         }
@@ -4741,24 +4724,15 @@ function fireCurrentWeapon() {
         updateStatusHud();
 
         const spinBtn = document.getElementById("spin-touch-btn");
-        const onSpin = e => {
-            if (e.cancelable) e.preventDefault();
-            e.stopPropagation();
-            if (isUnlocked) triggerSlotSpin();
-        };
+        const onSpin = e => { e.stopPropagation(); if (isUnlocked) triggerSlotSpin(); };
         spinBtn.addEventListener("mousedown", onSpin);
-        spinBtn.addEventListener("touchstart", onSpin, { passive: false });
-
-        const touchPadContainer = document.getElementById('touch-crosshair');
-        if (touchPadContainer) {
-            touchPadContainer.addEventListener('contextmenu', e => e.preventDefault());
-        }
+        spinBtn.addEventListener("touchstart", onSpin, { passive: true });
 
         spotLight = new THREE.SpotLight(0x20C20E, 55, 450, Math.PI / 7.5, 0.2, 1.5);
         scene.add(spotLight, spotLight.target);
         scene.add(new THREE.AmbientLight(0x3a403c));
 
-        window.addEventListener('mousemove', e => {
+       window.addEventListener('mousemove', e => {
             updatePointerFromClientXY(e.clientX, e.clientY);
         });
         window.addEventListener('mousedown', e => {
@@ -4790,27 +4764,35 @@ function fireCurrentWeapon() {
 
         const canvasEl = renderer.domElement;
         canvasEl.style.touchAction = 'none';
-        canvasEl.addEventListener('contextmenu', e => e.preventDefault());
         canvasEl.addEventListener('touchstart', e => {
             if (e.touches.length > 0) {
                 const t = e.touches[0];
                 if (handleKioskScreenClick(t.clientX, t.clientY)) {
-                    e.preventDefault();
                     isAimFiring = false;
                     return;
                 }
                 if (handleSceneObjectClick(t.clientX, t.clientY)) {
-                    e.preventDefault();
                     isAimFiring = false;
                     return;
                 }
                 if (isAnyOverlayOpen()) return;
-                e.preventDefault();
                 updatePointerFromClientXY(t.clientX, t.clientY);
                 isAimFiring = true;
                 fireCurrentWeapon();
             }
-        }, { passive: false });
+        }, { passive: true });
+        canvasEl.addEventListener('touchmove', e => {
+            if (!isAnyOverlayOpen() && isAimFiring && e.touches.length > 0) {
+                const t = e.touches[0];
+                updatePointerFromClientXY(t.clientX, t.clientY);
+            }
+        }, { passive: true });
+        canvasEl.addEventListener('touchend', () => {
+            isAimFiring = false;
+        }, { passive: true });
+        canvasEl.addEventListener('touchcancel', () => {
+            isAimFiring = false;
+        }, { passive: true });
 
         window.addEventListener('keydown', e => {
             const activeTag = document.activeElement ? document.activeElement.tagName : '';
