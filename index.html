@@ -119,31 +119,36 @@
         }
         @keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* Mobile / Touch Crosshair Pad */
-        #touch-crosshair {
-            position: fixed; bottom: 24px; right: 24px; width: 176px; height: 224px;
-            pointer-events: auto; z-index: 80; display: none;
-        }
-        #touch-crosshair.visible { display: block; }
-        .pad-btn {
-            position: absolute; background: rgba(5, 15, 8, 0.78); border: 1px solid var(--alien-green);
-            color: var(--alien-green); font-family: inherit; font-size: 0.7rem; font-weight: bold;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            touch-action: none; border-radius: 4px;
-        }
-        .pad-btn:active, .pad-btn.active { background: var(--alien-green); color: #000; }
-        #pad-up    { top: 0;    left: 58px;  width: 60px; height: 34px; border-color: var(--cyan); color: var(--cyan); }
-        #pad-down  { top: 38px;   left: 58px;  width: 60px; height: 34px; border-color: var(--cyan); color: var(--cyan); }
-        #pad-fwd   { top: 82px;   left: 58px;  width: 60px; height: 44px; }
-        #pad-back  { top: 174px;  left: 58px;  width: 60px; height: 44px; }
-        #pad-left  { top: 128px;  left: 6px;   width: 50px; height: 44px; }
-        #pad-right { top: 128px;  left: 120px; width: 50px; height: 44px; }
-        #pad-act   { top: 128px;  left: 62px;  width: 52px; height: 44px; border-color: var(--cyan); color: var(--cyan); font-size: 0.65rem; }
-      #penumbra-hud {
-         position: fixed; top: 118px; left: 20px; font-size: 0.76rem;
-         z-index: 110; pointer-events: none; color: var(--cyan);
-         font-weight: 700; text-shadow: 0 0 10px var(--cyan); line-height: 1.45; max-width: 440px;
-     }
+        /* Mobile / Touch Split Controls */
+#touch-crosshair {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 230px;
+    pointer-events: none; z-index: 80; display: none;
+}
+#touch-crosshair.visible { display: block; }
+#touch-crosshair.hide-movement .move-pad-btn { display: none !important; }
+#touch-crosshair:not(.can-vertical) .vert-pad-btn { display: none !important; }
+.pad-btn {
+    position: fixed; background: rgba(5, 15, 8, 0.82); border: 1px solid var(--alien-green);
+    color: var(--alien-green); font-family: inherit; font-size: 0.72rem; font-weight: bold;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    pointer-events: auto; touch-action: none; border-radius: 6px;
+}
+.pad-btn:active, .pad-btn.active { background: var(--alien-green); color: #000; }
+
+/* Left hand: Turn Left / Right */
+#pad-left  { bottom: 28px; left: 20px;  width: 66px; height: 64px; }
+#pad-right { bottom: 28px; left: 96px;  width: 66px; height: 64px; }
+
+/* Right hand: Forward, Back, [R], and optional Up/Down for plane & helicopter */
+#pad-up    { bottom: 178px; right: 98px; width: 64px; height: 42px; border-color: var(--cyan); color: var(--cyan); }
+#pad-down  { bottom: 130px; right: 98px; width: 64px; height: 42px; border-color: var(--cyan); color: var(--cyan); }
+#pad-fwd   { bottom: 84px;  right: 98px; width: 64px; height: 44px; }
+#pad-back  { bottom: 24px;  right: 98px; width: 64px; height: 44px; }
+#pad-act   { bottom: 24px;  right: 22px; width: 66px; height: 104px; border-color: var(--cyan); color: var(--cyan); font-size: 0.75rem; }
+#penumbra-hud {
+    position: fixed; top: 118px; left: 20px; font-size: 0.76rem;
+    z-index: 110; pointer-events: none; color: var(--cyan);
+    font-weight: 700; text-shadow: 0 0 10px var(--cyan); line-height: 1.45; max-width: 440px;}
      #alarm-overlay {
          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
          background: rgba(255, 0, 0, 0.35); display: none; z-index: 2400;
@@ -587,15 +592,14 @@
     </div>
 </div>
 
-<!-- Mobile Crosshair Pad -->
 <div id="touch-crosshair" aria-label="Mobile Controls">
-    <button class="pad-btn" id="pad-up" data-key="KeyQ">▲ UP</button>
-    <button class="pad-btn" id="pad-down" data-key="KeyE">▼ DN</button>
-    <button class="pad-btn" id="pad-fwd" data-key="KeyW">W</button>
-    <button class="pad-btn" id="pad-left" data-key="KeyA">◀ A</button>
+    <button class="pad-btn vert-pad-btn move-pad-btn" id="pad-up" data-key="KeyQ">▲ UP</button>
+    <button class="pad-btn vert-pad-btn move-pad-btn" id="pad-down" data-key="KeyE">▼ DN</button>
+    <button class="pad-btn move-pad-btn" id="pad-fwd" data-key="KeyW">▲ W</button>
+    <button class="pad-btn move-pad-btn" id="pad-left" data-key="KeyA">◀ A</button>
     <button class="pad-btn" id="pad-act" onclick="handleUnifiedRAction()">[R]</button>
-    <button class="pad-btn" id="pad-right" data-key="KeyD">D ▶</button>
-    <button class="pad-btn" id="pad-back" data-key="KeyS">S</button>
+    <button class="pad-btn move-pad-btn" id="pad-right" data-key="KeyD">D ▶</button>
+    <button class="pad-btn move-pad-btn" id="pad-back" data-key="KeyS">▼ S</button>
 </div>
 
 <div id="container"></div>
@@ -836,6 +840,7 @@ const PENUMBRA_EXIT_DIST = 17;
         }
         renderSlotDisplay();
         updatePenumbraHud();
+        updateMobileControlVisibility();
     }
 
     function createCashTexture(amount = 100) {
@@ -1147,6 +1152,7 @@ const PENUMBRA_EXIT_DIST = 17;
         } else {
             spinBtn.style.display = "none";
         }
+        updateMobileControlVisibility();
     }
 
     function triggerMachineScan() {
@@ -1708,6 +1714,7 @@ const PENUMBRA_EXIT_DIST = 17;
             } else {
                 spinBtn.style.display = "none";
             }
+            updateMobileControlVisibility();
         } else if (near.dist > PENUMBRA_EXIT_DIST && wasInPenumbraRange) {
             wasInPenumbraRange = false;
             if (isGuestMode) {
@@ -1716,8 +1723,8 @@ const PENUMBRA_EXIT_DIST = 17;
                 togglePhone(false);
             }
             spinBtn.style.display = "none";
+            updateMobileControlVisibility();
         }
-
         if (redemptionGroup) {
             const distKiosk = pos.distanceTo(redemptionGroup.position);
             if (distKiosk < KIOSK_ENTER_DIST) {
@@ -3956,7 +3963,53 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
         const pad = document.getElementById('touch-crosshair');
         if (pad) pad.classList.toggle('visible');
     }
+let isMobileDevice = false;
 
+function detectMobilePlayer() {
+    const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const touchCapable = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    isMobileDevice = Boolean(coarsePointer || (touchCapable && mobileUA));
+    return isMobileDevice;
+}
+
+function getActiveRigObject() {
+    if (controlMode === 'soldier' && soldierGroup) return soldierGroup;
+    if (controlMode === 'jet' && singleJet) return singleJet;
+    if (controlMode === 'heli' && singleHeli) return singleHeli;
+    return playerGroup;
+}
+
+function updateMobileControlVisibility() {
+    const pad = document.getElementById('touch-crosshair');
+    const spinBtn = document.getElementById('spin-touch-btn');
+    if (!pad) return;
+
+    const showVertical = (controlMode === 'jet' || controlMode === 'heli');
+    pad.classList.toggle('can-vertical', showVertical);
+
+    const spinVisible = Boolean(spinBtn && spinBtn.style.display !== 'none');
+    pad.classList.toggle('hide-movement', isMobileDevice && spinVisible);
+}
+
+function updateTorchAim(defaultAimPoint) {
+    const rig = getActiveRigObject();
+    if (!rig) return;
+
+    if (isMobileDevice) {
+        const origin = rig.position.clone().add(new THREE.Vector3(0, controlMode === 'soldier' ? 2.2 : 2.8, 0));
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(rig.quaternion).normalize();
+        const fixedTarget = origin.clone().addScaledVector(forward, 120);
+        fixedTarget.y = Math.max(0.5, origin.y - 4);
+        spotLight.position.copy(origin);
+        spotLight.target.position.copy(fixedTarget);
+        spotLight.target.updateMatrixWorld();
+    } else {
+        spotLight.position.copy(rig.position).add(new THREE.Vector3(0, controlMode === 'soldier' ? 2.2 : 3.2, 0));
+        spotLight.target.position.copy(defaultAimPoint);
+        spotLight.target.updateMatrixWorld();
+    }
+}
     function setupTouchCrosshair() {
         const padButtons = document.querySelectorAll('.pad-btn[data-key]');
         padButtons.forEach(btn => {
@@ -3981,6 +4034,8 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
             const pad = document.getElementById('touch-crosshair');
             if (pad) pad.classList.add('visible');
         }
+        detectMobilePlayer();
+        updateMobileControlVisibility();
     }
 
     function buildWastelanderVehicle(group) {
@@ -4371,10 +4426,18 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
         projectiles.push(mesh);
     }
 
-    function fireCurrentWeapon() {
+    function getMobileForwardAimPoint(originPos) {
+        const rig = getActiveRigObject() || playerGroup;
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(rig.quaternion).normalize();
+        const aimPt = originPos.clone().addScaledVector(forward, 140);
+        aimPt.y = Math.max(0.5, originPos.y - 2);
+        return aimPt;
+    }
+
+function fireCurrentWeapon() {
         if (!gameActive || isAnyOverlayOpen()) return;
         const now = Date.now();
-        const aimPoint = getAimPointFromPointer();
+        const pointerAimPoint = getAimPointFromPointer();
 
         if (controlMode === 'vehicle') {
             if (now - lastFireTime < 160) return;
@@ -4383,6 +4446,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
                 t.barrel.position.z = 0.45;
                 const muzzlePos = new THREE.Vector3();
                 t.barrel.getWorldPosition(muzzlePos);
+                const aimPoint = isMobileDevice ? getMobileForwardAimPoint(muzzlePos) : pointerAimPoint;
                 spawnProjectileToTarget(muzzlePos, aimPoint, 5.5, 115, 0x00FFFF, false);
             });
         } else if (controlMode === 'soldier') {
@@ -4391,12 +4455,14 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
             rifleRecoilOffset = 0.26;
             const muzzleWorld = new THREE.Vector3();
             soldierParts.muzzlePoint.getWorldPosition(muzzleWorld);
+            const aimPoint = isMobileDevice ? getMobileForwardAimPoint(muzzleWorld) : pointerAimPoint;
             spawnProjectileToTarget(muzzleWorld, aimPoint, 6.4, 105, 0x20C20E, false);
         } else if (controlMode === 'jet' && singleJet) {
             if (now - lastFireTime < 280) return;
             lastFireTime = now;
             [-8.1, 8.1].forEach(wx => {
                 const wingWorld = new THREE.Vector3(wx, 2.1, -1.6).applyMatrix4(singleJet.matrixWorld);
+                const aimPoint = isMobileDevice ? getMobileForwardAimPoint(wingWorld) : pointerAimPoint;
                 spawnProjectileToTarget(wingWorld, aimPoint, 7.8, 135, 0xffaa00, true);
             });
         } else if (controlMode === 'heli' && singleHeli) {
@@ -4404,6 +4470,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
             lastFireTime = now;
             [-2.8, 2.8].forEach(sx => {
                 const podWorld = new THREE.Vector3(sx, 1.9, -1.8).applyMatrix4(singleHeli.matrixWorld);
+                const aimPoint = isMobileDevice ? getMobileForwardAimPoint(podWorld) : pointerAimPoint;
                 spawnProjectileToTarget(podWorld, aimPoint, 6.2, 120, 0x20C20E, false);
             });
         }
@@ -4438,6 +4505,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
                 `[CLICK / TAP] FIRE AT POINT | [R] EXIT HELICOPTER (WHEN LANDED ON GROUND OR ROOF)<br>` +
                 `<span id="threat-level">${currentThreat}</span>`;
         }
+        updateMobileControlVisibility();
     }
 
     function handleUnifiedRAction() {
@@ -5071,8 +5139,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
                 t.base.lookAt(currentAimPoint);
                 t.barrel.position.z = THREE.MathUtils.lerp(t.barrel.position.z, 0, 0.15);
             });
-            spotLight.position.copy(playerGroup.position).add(new THREE.Vector3(0, 3.2, 0));
-            spotLight.target.position.copy(currentAimPoint);
+            updateTorchAim(currentAimPoint);
 
             if (checkOneWaySneakCrossing(prevX, playerGroup.position, leftSneakGapPos)) {
                 triggerSneakThrough('LEFT');
@@ -5155,8 +5222,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
             }
 
             if (soldierGroup.position.y < 8) updatePenumbraProximity(soldierGroup.position);
-            spotLight.position.copy(soldierGroup.position).add(new THREE.Vector3(0, 2.2, 0));
-            spotLight.target.position.copy(currentAimPoint);
+            updateTorchAim(currentAimPoint);
 
             if (soldierGroup.position.y < 8) {
                 if (checkOneWaySneakCrossing(prevX, soldierGroup.position, leftSneakGapPos)) {
@@ -5278,8 +5344,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
 
             checkAircraftFlyThrough(prevX, singleJet.position, 'VIPER-1');
 
-            spotLight.position.copy(singleJet.position).add(new THREE.Vector3(0, 1.5, 0));
-            spotLight.target.position.copy(currentAimPoint);
+            updateTorchAim(currentAimPoint);
 
             if ((singleJet.position.y - nextDeckY) <= 6 && Math.abs(jetSpeed) <= 1.2) {
                 promptEl.innerText = nextDeckY > 10 ? '[R] EXIT FIGHTER JET ON ROOFTOP' : '[R] EXIT FIGHTER JET';
@@ -5360,8 +5425,7 @@ function createPenumbraCabinetMesh(worldX, worldZ, rotY) {
 
             checkAircraftFlyThrough(prevX, singleHeli.position, 'CHOPPER-1');
 
-            spotLight.position.copy(singleHeli.position).add(new THREE.Vector3(0, 1.8, 0));
-            spotLight.target.position.copy(currentAimPoint);
+            updateTorchAim(currentAimPoint);
 
             if ((singleHeli.position.y - nextDeckY) <= 3.5) {
                 promptEl.innerText = nextDeckY > 10 ? '[R] EXIT HELICOPTER ON ROOFTOP' : '[R] EXIT HELICOPTER';
