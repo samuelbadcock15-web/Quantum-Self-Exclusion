@@ -294,7 +294,6 @@
 <div id="top-bar">
     <button class="ui-btn" onclick="toggleFullscreen()">[ FULLSCREEN ]</button>
     <button class="ui-btn" onclick="toggleTouchPad()">[ MOBILE PAD ]</button>
-    <button class="ui-btn" onclick="togglePhone()">[ PENUMBRA OS ]</button>
     <button class="ui-btn" style="border-color:#ff5544;color:#ff5544" onclick="localStorage.clear();location.reload()">[ REBOOT ]</button>
 </div>
 
@@ -423,7 +422,6 @@
         <div id="chat-box"></div>
         <input type="text" id="chat-input" placeholder="MESSAGE...">
         <button class="os-btn" onclick="sendChat()">SEND</button>
-        <button class="os-btn pin-btn-glow" onclick="generatePin()">GENERATE PIN</button>
         <button class="os-btn" style="border-color:#444;color:#666" onclick='showPenumbraScreen("sc-dashboard")'>BACK</button>
     </div>
 
@@ -790,8 +788,8 @@
 
     let wasInPenumbraRange = false;
     let inRedemptionRange = false;
-    const PENUMBRA_ENTER_DIST = 26;
-    const PENUMBRA_EXIT_DIST = 34;
+    const PENUMBRA_ENTER_DIST = 12;
+const PENUMBRA_EXIT_DIST = 17;
     const KIOSK_ENTER_DIST = 24;
     const KIOSK_EXIT_DIST = 32;
 
