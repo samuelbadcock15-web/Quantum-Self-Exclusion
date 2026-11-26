@@ -121,30 +121,30 @@
 
         /* Mobile / Touch Split Controls */
 #touch-crosshair {
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 230px;
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 260px;
     pointer-events: none; z-index: 80; display: none;
 }
 #touch-crosshair.visible { display: block; }
 #touch-crosshair.hide-movement .move-pad-btn { display: none !important; }
 #touch-crosshair:not(.can-vertical) .vert-pad-btn { display: none !important; }
 .pad-btn {
-    position: fixed; background: rgba(5, 15, 8, 0.82); border: 1px solid var(--alien-green);
+    position: fixed; background: rgba(5, 15, 8, 0.85); border: 1px solid var(--alien-green);
     color: var(--alien-green); font-family: inherit; font-size: 0.72rem; font-weight: bold;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
     pointer-events: auto; touch-action: none; border-radius: 6px;
 }
 .pad-btn:active, .pad-btn.active { background: var(--alien-green); color: #000; }
 
-/* Left hand: Turn Left / Right */
-#pad-left  { bottom: 28px; left: 20px;  width: 66px; height: 64px; }
-#pad-right { bottom: 28px; left: 96px;  width: 66px; height: 64px; }
+/* Left hand: Turn Left / Right above the bottom-left instructions box */
+#pad-left  { bottom: 118px; left: 20px;  width: 66px; height: 54px; }
+#pad-right { bottom: 118px; left: 94px;  width: 66px; height: 54px; }
 
-/* Right hand: Forward, Back, [R], and optional Up/Down for plane & helicopter */
-#pad-up    { bottom: 178px; right: 98px; width: 64px; height: 42px; border-color: var(--cyan); color: var(--cyan); }
-#pad-down  { bottom: 130px; right: 98px; width: 64px; height: 42px; border-color: var(--cyan); color: var(--cyan); }
-#pad-fwd   { bottom: 84px;  right: 98px; width: 64px; height: 44px; }
-#pad-back  { bottom: 24px;  right: 98px; width: 64px; height: 44px; }
-#pad-act   { bottom: 24px;  right: 22px; width: 66px; height: 104px; border-color: var(--cyan); color: var(--cyan); font-size: 0.75rem; }
+/* Right hand: Forward above [R], Back below [R], and optional Up/Down for plane & helicopter */
+#pad-up    { bottom: 232px; right: 24px; width: 66px; height: 38px; border-color: var(--cyan); color: var(--cyan); }
+#pad-down  { bottom: 190px; right: 24px; width: 66px; height: 38px; border-color: var(--cyan); color: var(--cyan); }
+#pad-fwd   { bottom: 146px; right: 24px; width: 66px; height: 46px; }
+#pad-act   { bottom: 84px;  right: 24px; width: 66px; height: 54px; border-color: var(--cyan); color: var(--cyan); font-size: 0.75rem; }
+#pad-back  { bottom: 30px;  right: 24px; width: 66px; height: 46px; }
 #penumbra-hud {
     position: fixed; top: 118px; left: 20px; font-size: 0.76rem;
     z-index: 110; pointer-events: none; color: var(--cyan);
@@ -3988,7 +3988,11 @@ function updateMobileControlVisibility() {
     const showVertical = (controlMode === 'jet' || controlMode === 'heli');
     pad.classList.toggle('can-vertical', showVertical);
 
-    const spinVisible = Boolean(spinBtn && spinBtn.style.display !== 'none');
+    const spinVisible = Boolean(
+        spinBtn &&
+        spinBtn.offsetParent !== null &&
+        window.getComputedStyle(spinBtn).display !== 'none'
+    );
     pad.classList.toggle('hide-movement', isMobileDevice && spinVisible);
 }
 
@@ -4435,46 +4439,42 @@ function updateTorchAim(defaultAimPoint) {
     }
 
 function fireCurrentWeapon() {
-        if (!gameActive || isAnyOverlayOpen()) return;
-        const now = Date.now();
-        const pointerAimPoint = getAimPointFromPointer();
+    if (!gameActive || isAnyOverlayOpen()) return;
+    const now = Date.now();
+    const aimPoint = getAimPointFromPointer();
 
-        if (controlMode === 'vehicle') {
-            if (now - lastFireTime < 160) return;
-            lastFireTime = now;
-            turrets.forEach(t => {
-                t.barrel.position.z = 0.45;
-                const muzzlePos = new THREE.Vector3();
-                t.barrel.getWorldPosition(muzzlePos);
-                const aimPoint = isMobileDevice ? getMobileForwardAimPoint(muzzlePos) : pointerAimPoint;
-                spawnProjectileToTarget(muzzlePos, aimPoint, 5.5, 115, 0x00FFFF, false);
-            });
-        } else if (controlMode === 'soldier') {
-            if (now - lastFireTime < 110) return;
-            lastFireTime = now;
-            rifleRecoilOffset = 0.26;
-            const muzzleWorld = new THREE.Vector3();
-            soldierParts.muzzlePoint.getWorldPosition(muzzleWorld);
-            const aimPoint = isMobileDevice ? getMobileForwardAimPoint(muzzleWorld) : pointerAimPoint;
-            spawnProjectileToTarget(muzzleWorld, aimPoint, 6.4, 105, 0x20C20E, false);
-        } else if (controlMode === 'jet' && singleJet) {
-            if (now - lastFireTime < 280) return;
-            lastFireTime = now;
-            [-8.1, 8.1].forEach(wx => {
-                const wingWorld = new THREE.Vector3(wx, 2.1, -1.6).applyMatrix4(singleJet.matrixWorld);
-                const aimPoint = isMobileDevice ? getMobileForwardAimPoint(wingWorld) : pointerAimPoint;
-                spawnProjectileToTarget(wingWorld, aimPoint, 7.8, 135, 0xffaa00, true);
-            });
-        } else if (controlMode === 'heli' && singleHeli) {
-            if (now - lastFireTime < 150) return;
-            lastFireTime = now;
-            [-2.8, 2.8].forEach(sx => {
-                const podWorld = new THREE.Vector3(sx, 1.9, -1.8).applyMatrix4(singleHeli.matrixWorld);
-                const aimPoint = isMobileDevice ? getMobileForwardAimPoint(podWorld) : pointerAimPoint;
-                spawnProjectileToTarget(podWorld, aimPoint, 6.2, 120, 0x20C20E, false);
-            });
-        }
+    if (controlMode === 'vehicle') {
+        if (now - lastFireTime < 160) return;
+        lastFireTime = now;
+        turrets.forEach(t => {
+            t.barrel.position.z = 0.45;
+            const muzzlePos = new THREE.Vector3();
+            t.barrel.getWorldPosition(muzzlePos);
+            spawnProjectileToTarget(muzzlePos, aimPoint, 5.5, 115, 0x00FFFF, false);
+        });
+    } else if (controlMode === 'soldier') {
+        if (now - lastFireTime < 110) return;
+        lastFireTime = now;
+        rifleRecoilOffset = 0.26;
+        const muzzleWorld = new THREE.Vector3();
+        soldierParts.muzzlePoint.getWorldPosition(muzzleWorld);
+        spawnProjectileToTarget(muzzleWorld, aimPoint, 6.4, 105, 0x20C20E, false);
+    } else if (controlMode === 'jet' && singleJet) {
+        if (now - lastFireTime < 280) return;
+        lastFireTime = now;
+        [-8.1, 8.1].forEach(wx => {
+            const wingWorld = new THREE.Vector3(wx, 2.1, -1.6).applyMatrix4(singleJet.matrixWorld);
+            spawnProjectileToTarget(wingWorld, aimPoint, 7.8, 135, 0xffaa00, true);
+        });
+    } else if (controlMode === 'heli' && singleHeli) {
+        if (now - lastFireTime < 150) return;
+        lastFireTime = now;
+        [-2.8, 2.8].forEach(sx => {
+            const podWorld = new THREE.Vector3(sx, 1.9, -1.8).applyMatrix4(singleHeli.matrixWorld);
+            spawnProjectileToTarget(podWorld, aimPoint, 6.2, 120, 0x20C20E, false);
+        });
     }
+}
 
     function updateHudForMode() {
         const vesselLabel = document.getElementById('vessel-label');
