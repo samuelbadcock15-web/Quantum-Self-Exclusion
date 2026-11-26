@@ -7,8 +7,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --alien-green: #20C20E; --dark-bg: #050505; --cyan: #00FFFF; --danger-red: #FF0000; --magenta: #FF00FF; --amber: #FFAA00; --gold: #FFDD00; }
-* { margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; user-select: none; -webkit-user-select: none; }
-        body { background: var(--dark-bg); color: var(--alien-green); font-family: 'Courier New', monospace; }
+- { margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; user-select: none; -webkit-user-select: none; }
+        body {
+            background: var(--dark-bg);
+            color: var(--alien-green);
+            font-family: 'Courier New', monospace;
+            overscroll-behavior: none;
+            height: 100%;
+            width: 100%;
+        }
         #ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
 
         .ship-label { position: absolute; top: 20px; left: 20px; font-size: 1.5rem; font-weight: bold; border-left: 5px solid var(--alien-green); padding-left: 10px; }
@@ -131,7 +138,7 @@
     position: fixed; background: rgba(5, 15, 8, 0.85); border: 1px solid var(--alien-green);
     color: var(--alien-green); font-family: inherit; font-size: 0.72rem; font-weight: bold;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    pointer-events: auto; touch-action: none; border-radius: 6px;
+    pointer-events: auto; touch-action: none; -webkit-touch-callout: none; border-radius: 6px;
 }
 .pad-btn:active, .pad-btn.active { background: var(--alien-green); color: #000; }
 
