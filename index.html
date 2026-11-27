@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --alien-green: #20C20E; --dark-bg: #050505; --cyan: #00FFFF; --danger-red: #FF0000; --magenta: #FF00FF; --amber: #FFAA00; --gold: #FFDD00; }
-- { margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; user-select: none; -webkit-user-select: none; }
+* { margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; user-select: none; -webkit-user-select: none; }
         body {
             background: var(--dark-bg);
             color: var(--alien-green);
@@ -4782,11 +4782,12 @@ function fireCurrentWeapon() {
             }
         }, { passive: true });
         canvasEl.addEventListener('touchmove', e => {
+            if (e.cancelable) e.preventDefault();
             if (!isAnyOverlayOpen() && isAimFiring && e.touches.length > 0) {
                 const t = e.touches[0];
                 updatePointerFromClientXY(t.clientX, t.clientY);
             }
-        }, { passive: true });
+        }, { passive: false });
         canvasEl.addEventListener('touchend', () => {
             isAimFiring = false;
         }, { passive: true });
