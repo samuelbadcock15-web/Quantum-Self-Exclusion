@@ -258,13 +258,29 @@
      }
      .chat-msg { margin-bottom: 5px; border-left: 2px solid var(--alien-green); padding-left: 5px; }
      #spin-touch-btn {
-         position: fixed; bottom: 25px; right: 24px; width: 185px; height: 110px;
-         background: rgba(32, 194, 14, 0.92); border: 4px solid #000; display: none;
-         align-items: center; justify-content: center; font-weight: 900; text-transform: uppercase;
-         pointer-events: auto; touch-action: none; font-size: 22px; color: #000; z-index: 360;
-         box-shadow: 0 0 20px var(--alien-green); border-radius: 12px; cursor: pointer;
-     }
-     #spin-touch-btn:active { background: #000; color: var(--alien-green); border-color: var(--alien-green); }
+    position: fixed;
+    bottom: 204px;
+    right: 20px;
+    width: 108px;
+    height: 44px;
+    background: rgba(32, 194, 14, 0.92);
+    border: 2px solid #000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    text-transform: uppercase;
+    pointer-events: auto;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    font-size: 15px;
+    color: #000;
+    z-index: 360;
+    box-shadow: 0 0 12px var(--alien-green);
+    border-radius: 8px;
+    cursor: pointer;
+}
+#spin-touch-btn:active { background: #000; color: var(--alien-green); border-color: var(--alien-green); }
 
      .satse-nav { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 4px; }
      .satse-nav button {
@@ -293,7 +309,72 @@
          display: none; flex-direction: column; align-items: center; justify-content: center;
          z-index: 500; color: #f30; font-family: 'Courier New', monospace; text-align: center; padding: 20px;
      }
-    </style>
+#phone-lockdown-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(10, 10, 10, 0.94); border: 4px solid #f30; border-radius: 26px;
+        display: none; flex-direction: column; align-items: center; justify-content: center;
+        z-index: 500; color: #f30; font-family: 'Courier New', monospace; text-align: center; padding: 20px;
+    }
+
+    @media (max-width: 640px) {
+        .ship-label {
+            top: 10px;
+            left: 12px;
+            font-size: 0.85rem;
+            max-width: 56vw;
+            padding-left: 7px;
+            border-left-width: 3px;
+        }
+        .stats {
+            top: 10px;
+            right: 12px;
+            font-size: 0.72rem;
+            max-width: 40vw;
+            line-height: 1.3;
+        }
+        #top-bar {
+            top: 52px;
+            left: 12px;
+            gap: 5px;
+            flex-wrap: wrap;
+            max-width: calc(100vw - 24px);
+        }
+        .ui-btn {
+            padding: 4px 7px;
+            font-size: 0.66rem;
+        }
+        #penumbra-hud {
+            top: 84px;
+            left: 12px;
+            font-size: 0.65rem;
+            max-width: calc(100vw - 24px);
+        }
+        .controls {
+            bottom: 10px;
+            left: 12px;
+            right: 12px;
+            font-size: 0.58rem;
+            line-height: 1.35;
+            padding: 6px 8px;
+        }
+        #pad-left  { bottom: 132px; left: 14px; width: 62px; height: 50px; }
+        #pad-right { bottom: 132px; left: 82px; width: 62px; height: 50px; }
+
+        #pad-up    { bottom: 252px; right: 20px; width: 62px; height: 36px; border-color: var(--cyan); color: var(--cyan); }
+        #pad-down  { bottom: 212px; right: 20px; width: 62px; height: 36px; border-color: var(--cyan); color: var(--cyan); }
+        #pad-fwd   { bottom: 164px; right: 20px; width: 62px; height: 42px; }
+        #pad-act   { bottom: 106px; right: 20px; width: 62px; height: 50px; border-color: var(--cyan); color: var(--cyan); font-size: 0.72rem; }
+        #pad-back  { bottom: 56px;  right: 20px; width: 62px; height: 42px; }
+
+        #spin-touch-btn {
+            bottom: 254px;
+            right: 90px;
+            width: 96px;
+            height: 42px;
+            font-size: 14px;
+        }
+    }
+</style>
 </head>
 <body id="game-body">
 <div id="flash"></div>
