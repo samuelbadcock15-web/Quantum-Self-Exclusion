@@ -138,7 +138,7 @@
     position: fixed; background: rgba(5, 15, 8, 0.85); border: 1px solid var(--alien-green);
     color: var(--alien-green); font-family: inherit; font-size: 0.72rem; font-weight: bold;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    pointer-events: auto; touch-action: none; -webkit-touch-callout: none; border-radius: 6px;
+    pointer-events: auto; touch-action: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; border-radius: 6px;
 }
 .pad-btn:active, .pad-btn.active { background: var(--alien-green); color: #000; }
 
@@ -600,13 +600,13 @@
 </div>
 
 <div id="touch-crosshair" aria-label="Mobile Controls">
-    <button class="pad-btn vert-pad-btn move-pad-btn" id="pad-up" data-key="KeyQ">▲ UP</button>
-    <button class="pad-btn vert-pad-btn move-pad-btn" id="pad-down" data-key="KeyE">▼ DN</button>
-    <button class="pad-btn move-pad-btn" id="pad-fwd" data-key="KeyW">▲ W</button>
-    <button class="pad-btn move-pad-btn" id="pad-left" data-key="KeyA">◀ A</button>
-    <button class="pad-btn" id="pad-act" onclick="handleUnifiedRAction()">[R]</button>
-    <button class="pad-btn move-pad-btn" id="pad-right" data-key="KeyD">D ▶</button>
-    <button class="pad-btn move-pad-btn" id="pad-back" data-key="KeyS">▼ S</button>
+    <div class="pad-btn vert-pad-btn move-pad-btn" id="pad-up" data-key="KeyQ">▲ UP</div>
+    <div class="pad-btn vert-pad-btn move-pad-btn" id="pad-down" data-key="KeyE">▼ DN</div>
+    <div class="pad-btn move-pad-btn" id="pad-fwd" data-key="KeyW">▲ W</div>
+    <div class="pad-btn move-pad-btn" id="pad-left" data-key="KeyA">◀ A</div>
+    <div class="pad-btn" id="pad-act">[R]</div>
+    <div class="pad-btn move-pad-btn" id="pad-right" data-key="KeyD">D ▶</div>
+    <div class="pad-btn move-pad-btn" id="pad-back" data-key="KeyS">▼ S</div>
 </div>
 
 <div id="container"></div>
@@ -4026,20 +4026,34 @@ function updateTorchAim(defaultAimPoint) {
         padButtons.forEach(btn => {
             const code = btn.getAttribute('data-key');
             const press = (e) => {
-                e.preventDefault();
+                if (e.cancelable) e.preventDefault();
                 keys[code] = true;
                 btn.classList.add('active');
             };
             const release = (e) => {
-                e.preventDefault();
+                if (e.cancelable) e.preventDefault();
                 keys[code] = false;
                 btn.classList.remove('active');
             };
-            btn.addEventListener('pointerdown', press);
-            btn.addEventListener('pointerup', release);
-            btn.addEventListener('pointercancel', release);
-            btn.addEventListener('pointerleave', release);
+            btn.addEventListener('touchstart', press, { passive: false });
+            btn.addEventListener('touchend', release, { passive: false });
+            btn.addEventListener('touchcancel', release, { passive: false });
         });
+
+        const actBtn = document.getElementById('pad-act');
+        if (actBtn) {
+            actBtn.addEventListener('touchstart', (e) => {
+                if (e.cancelable) e.preventDefault();
+                actBtn.classList.add('active');
+                handleUnifiedRAction();
+            }, { passive: false });
+            const clearAct = (e) => {
+                if (e.cancelable) e.preventDefault();
+                actBtn.classList.remove('active');
+            };
+            actBtn.addEventListener('touchend', clearAct, { passive: false });
+            actBtn.addEventListener('touchcancel', clearAct, { passive: false });
+        }
 
         if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
             const pad = document.getElementById('touch-crosshair');
