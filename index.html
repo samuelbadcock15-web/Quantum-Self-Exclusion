@@ -510,7 +510,7 @@
         <button class="os-btn" onclick='showPenumbraScreen("sc-history")'>TRANSACTION LOG</button>
         <button class="os-btn" onclick='showPenumbraScreen("sc-chat")'>FACILITY COMMS</button>
         <button class="os-btn" style="border-color:#ffaa00;color:#ffaa00" onclick='showPenumbraScreen("sc-satse")'>SELF-EXCLUSION PORTAL</button>
-        <button class="os-btn os-btn-exit" onclick="togglePhone(false)">PLAY MACHINE (HIDE PHONE)</button>
+        <button class="os-btn os-btn-exit" onclick="enterMachinePlayMode()">PLAY MACHINE (HIDE PHONE)</button>
         <button class="os-btn" style="border-color:#f30;color:#f30" onclick="hardResetOS()">LOG OUT / RESET</button>
     </div>
 
@@ -880,6 +880,7 @@
     let currentUserEmail = null;
     let balance = 0;
     let isUnlocked = false;
+    let readyToPlaySpin = false;
     let sessionLimit = Infinity;
     let isLimitLocked = false;
     let history = [];
@@ -1200,6 +1201,8 @@ const PENUMBRA_EXIT_DIST = 17;
         spinResultMsg = `CASHED OUT £${payout} VOUCHER`;
         renderSlotDisplay();
         spawnVoucherOnFloor(payout);
+        readyToPlaySpin = false;
+        refreshSpinButtonVisibility();
         updateGuestMachineUI(`VOUCHER £${payout} PRINTED — PRESS 'R' TO COLLECT`);
     }
 
@@ -1244,8 +1247,19 @@ const PENUMBRA_EXIT_DIST = 17;
             document.getElementById("guest-back-btn").style.display = "block";
         }
     }
+function enterMachinePlayMode() {
+        if (isSelfExcluded || hasSelfExcluded) return;
+        if (balance <= 0) {
+            showPenumbraScreen("sc-deposit");
+            return;
+        }
+        isUnlocked = true;
+        readyToPlaySpin = true;
+        togglePhone(false);
+        refreshSpinButtonVisibility();
+    }
 
-   function togglePhone(forceState = null) {
+    function togglePhone(forceState = null) {
         phoneActive = forceState !== null ? forceState : !phoneActive;
         const ui = document.getElementById("ui-container");
         ui.classList.toggle("active-phone", phoneActive);
@@ -1264,13 +1278,7 @@ const PENUMBRA_EXIT_DIST = 17;
         } else {
             ui.style.display = "none";
         }
-        const spinBtn = document.getElementById("spin-touch-btn");
-        if (wasInPenumbraRange && !phoneActive && !isGuestMode && !isSelfExcluded && !hasSelfExcluded) {
-            spinBtn.style.display = "flex";
-        } else {
-            spinBtn.style.display = "none";
-        }
-        updateMobileControlVisibility();
+        refreshSpinButtonVisibility();
     }
 
     function triggerMachineScan() {
@@ -1418,6 +1426,8 @@ const PENUMBRA_EXIT_DIST = 17;
         spinResultMsg = "APPROACH TO SYNC";
         renderSlotDisplay();
         renderRedemptionDisplay();
+        readyToPlaySpin = false;
+        refreshSpinButtonVisibility();
         updatePenumbraHud();
     }
 
@@ -1431,6 +1441,7 @@ const PENUMBRA_EXIT_DIST = 17;
         history.unshift({ date: new Date().toLocaleTimeString(), amt: `+£${amt}`, loc: "TOP_UP" });
         saveUserData();
         updatePenumbraStats();
+        refreshSpinButtonVisibility();
     }
 
     function lockLimitUI() {
@@ -1834,15 +1845,16 @@ const PENUMBRA_EXIT_DIST = 17;
             }
             updateMobileControlVisibility();
         } else if (near.dist > PENUMBRA_EXIT_DIST && wasInPenumbraRange) {
-            wasInPenumbraRange = false;
-            if (isGuestMode) {
-                endGuestSessionOnLeave();
-            } else {
-                togglePhone(false);
-            }
-            spinBtn.style.display = "none";
-            updateMobileControlVisibility();
-        }
+     wasInPenumbraRange = false;
+     readyToPlaySpin = false;
+     isUnlocked = false;
+     if (isGuestMode) {
+         endGuestSessionOnLeave();
+     } else {
+         togglePhone(false);
+     }
+     refreshSpinButtonVisibility();
+ }
         if (redemptionGroup) {
             const distKiosk = pos.distanceTo(redemptionGroup.position);
             if (distKiosk < KIOSK_ENTER_DIST) {
@@ -4098,6 +4110,22 @@ function getActiveRigObject() {
     return playerGroup;
 }
 
+function refreshSpinButtonVisibility() {
+    const spinBtn = document.getElementById("spin-touch-btn");
+    if (!spinBtn) return;
+
+    const excluded = Boolean(isSelfExcluded || hasSelfExcluded);
+    const canShowSpin = Boolean(
+        wasInPenumbraRange &&
+        !phoneActive &&
+        readyToPlaySpin &&
+        !excluded &&
+        balance > 0
+    );
+
+    spinBtn.style.display = canShowSpin ? "flex" : "none";
+    updateMobileControlVisibility();
+}
 function updateMobileControlVisibility() {
     const pad = document.getElementById('touch-crosshair');
     const spinBtn = document.getElementById('spin-touch-btn');
