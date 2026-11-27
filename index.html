@@ -309,13 +309,6 @@
          display: none; flex-direction: column; align-items: center; justify-content: center;
          z-index: 500; color: #f30; font-family: 'Courier New', monospace; text-align: center; padding: 20px;
      }
-#phone-lockdown-overlay {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(10, 10, 10, 0.94); border: 4px solid #f30; border-radius: 26px;
-        display: none; flex-direction: column; align-items: center; justify-content: center;
-        z-index: 500; color: #f30; font-family: 'Courier New', monospace; text-align: center; padding: 20px;
-    }
-
     @media (max-width: 640px) {
         .ship-label {
             top: 10px;
@@ -4819,9 +4812,14 @@ function fireCurrentWeapon() {
         updateStatusHud();
 
         const spinBtn = document.getElementById("spin-touch-btn");
-        const onSpin = e => { e.stopPropagation(); if (isUnlocked) triggerSlotSpin(); };
-        spinBtn.addEventListener("mousedown", onSpin);
-        spinBtn.addEventListener("touchstart", onSpin, { passive: true });
+const onSpin = e => {
+    e.stopPropagation();
+    ['KeyW', 'KeyS', 'KeyA', 'KeyD', 'KeyQ', 'KeyE'].forEach(k => { keys[k] = false; });
+    document.querySelectorAll('.pad-btn.active').forEach(b => b.classList.remove('active'));
+    if (isUnlocked) triggerSlotSpin();
+};
+spinBtn.addEventListener("mousedown", onSpin);
+spinBtn.addEventListener("touchstart", onSpin, { passive: true });
 
         spotLight = new THREE.SpotLight(0x20C20E, 55, 450, Math.PI / 7.5, 0.2, 1.5);
         scene.add(spotLight, spotLight.target);
